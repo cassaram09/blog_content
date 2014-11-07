@@ -29,6 +29,7 @@ gem 'spring',        group: :development
 gem 'pry-rails'
 gem 'benchmark-ips', '~> 2.0.0'
 gem 'active_model_serializers', '~> 0.9.0'
+gem 'thin_serializer', github: 'mrbrdo/thin_serializer'
 gem 'render_anywhere', :require => false
 
 # Use ActiveModel has_secure_password

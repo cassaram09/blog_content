@@ -30,7 +30,13 @@ movie = Movie.new(
   genres: ["Action", "Drama", "Science Fiction", "Thriller"]
 )
 
-movies = Array.new(15, movie)
+movies = Array.new(10, movie)
+
+class ThinMovieSerializer < ThinSerializer
+  attributes :title, :year, :released, :url, :trailer,
+             :runtime, :tagline, :overview, :certification,
+             :imdb_id, :tmdb_id, :poster, :watchers
+end
 
 namespace :benchmarks do
   desc "Benchamark single object (with render)"
@@ -79,6 +85,10 @@ namespace :benchmarks do
         render text: ActiveModel::ArraySerializer.new(movies, each_serializer: MovieSerializer).to_json
       end
 
+      x.report 'thin_serializer' do
+        render text: ThinMovieSerializer.new(Movie.all).to_json
+      end
+
       x.compare!
     end
   end
@@ -91,14 +101,17 @@ namespace :benchmarks do
           json.array! movies do |movie|
             json.extract! movie, :title, :year, :released, :url, :trailer,
                                  :runtime, :tagline, :overview, :certification,
-                                 :imdb_id, :tmdb_id, :poster, :images, :watchers,
-                                 :ratings, :genres
+                                 :imdb_id, :tmdb_id, :poster, :watchers
           end
         }
       end
 
       x.report 'active_model_serializers' do
         ActiveModel::ArraySerializer.new(movies, each_serializer: MovieSerializer).to_json
+      end
+
+      x.report 'thin_serializer' do
+        ThinMovieSerializer.new(Movie.all).to_json
       end
 
       x.compare!
